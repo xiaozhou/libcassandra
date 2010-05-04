@@ -22,6 +22,7 @@ test-docs:
 	(cd docs && $(MAKE) test-docs)
 include libgenthrift/include.am
 include libcassandra/include.am
+include libcassie/include.am
 
 check-local: test-no-outputdiff
 
@@ -57,6 +58,3 @@ lcov-clean: clean
 	rm -rf lcov */lcov.out 
 	find . -name '*.gcno' | xargs rm -f
 	find . -name '*.gcda' | xargs rm -f
-
-
-
