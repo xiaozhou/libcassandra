@@ -96,6 +96,17 @@ public:
                     const std::string &super_column_name,
                     const std::string &column_name);
 
+  /**
+   * Remove a column
+   *
+   * @param[in] key the column key
+   * @param[in] column_family the column family
+   * @param[in] column_name the column name (optional)
+   */
+  void removeColumn(const std::string &key,
+                    const std::string &column_family,
+                    const std::string &column_name);
+
 
   /**
    * Remove a super column and all columns under it
@@ -121,6 +132,58 @@ public:
                                            const std::string &column_family,
                                            const std::string &super_column_name,
                                            const std::string &column_name);
+
+  /**
+   * Retrieve multiple columns by names
+   *
+   * @param[in] key the column key
+   * @param[in] column_family the column family
+   * @param[in] super_column_name the super column name (optional)
+   * @param[in] the list of column names
+   * @return A list of found columns
+   */
+  std::vector<org::apache::cassandra::Column> getColumns(const std::string &key,
+                                                         const std::string &column_family,
+                                                         const std::string &super_column_name,
+                                                         const std::vector<std::string> column_names);
+
+  /**
+   * Retrieve multiple columns by names
+   *
+   * @param[in] key the column key
+   * @param[in] column_family the column family
+   * @param[in] the list of column names
+   * @return A list of found columns
+   */
+  std::vector<org::apache::cassandra::Column> getColumns(const std::string &key,
+                                                         const std::string &column_family,
+                                                         const std::vector<std::string> column_names);
+
+  /**
+   * Retrieve multiple columns by range
+   *
+   * @param[in] key the column key
+   * @param[in] column_family the column family
+   * @param[in] super_column_name the super column name (optional)
+   * @param[in] the range for the query
+   * @return A list of found columns
+   */
+  std::vector<org::apache::cassandra::Column> getColumns(const std::string &key,
+                                                         const std::string &column_family,
+                                                         const std::string &super_column_name,
+                                                         const org::apache::cassandra::SliceRange &range);
+
+  /**
+   * Retrieve multiple columns by range
+   *
+   * @param[in] key the column key
+   * @param[in] column_family the column family
+   * @param[in] the range for the query
+   * @return A list of found columns
+   */
+  std::vector<org::apache::cassandra::Column> getColumns(const std::string &key,
+                                                         const std::string &column_family,
+                                                         const org::apache::cassandra::SliceRange &range);
 
   /**
    * Retrieve a column
@@ -164,13 +227,31 @@ public:
                                                      const std::string &column_family,
                                                      const std::string &super_column_name);
 
-  std::vector<org::apache::cassandra::Column> getSliceNames(const std::string &key,
-                                                            const org::apache::cassandra::ColumnParent &col_parent,
-                                                            org::apache::cassandra::SlicePredicate &pred);
+  /**
+   * Retrieve multiple super columns by names
+   *
+   * @param[in] key the column key
+   * @param[in] column_family the column family
+   * @param[in] the list of super column names
+   * @return A list of found super columns
+   */
+  std::vector<org::apache::cassandra::SuperColumn> getSuperColumns(
+                                                                   const std::string &key,
+                                                                   const std::string &column_family,
+                                                                   const std::vector<std::string> super_column_names);
+  /**
+   * Retrieve multiple super columns by range
+   *
+   * @param[in] key the column key
+   * @param[in] column_family the column family
+   * @param[in] the range for the query
+   * @return A list of found super columns
+   */
 
-  std::vector<org::apache::cassandra::Column> getSliceRange(const std::string &key,
-                                                            const org::apache::cassandra::ColumnParent &col_parent,
-                                                            org::apache::cassandra::SlicePredicate &pred);
+  std::vector<org::apache::cassandra::SuperColumn> getSuperColumns(
+                                                                   const std::string &key,
+                                                                   const std::string &column_family,
+                                                                   const org::apache::cassandra::SliceRange &range);
 
   std::map<std::string, std::vector<org::apache::cassandra::Column> >
   getRangeSlice(const org::apache::cassandra::ColumnParent &col_parent,

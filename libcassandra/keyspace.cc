@@ -92,7 +92,7 @@ void Keyspace::remove(const string &key,
   col_path.column_family.assign(column_family);
   if (! super_column_name.empty()) 
   {
-    col_path.column.assign(super_column_name);
+    col_path.super_column.assign(super_column_name);
     col_path.__isset.super_column= true;
   }
   if (! column_name.empty()) 
@@ -110,6 +110,13 @@ void Keyspace::removeColumn(const string &key,
                             const string &column_name)
 {
   remove(key, column_family, super_column_name, column_name);
+}
+
+void Keyspace::removeColumn(const string &key,
+                            const string &column_family,
+                            const string &column_name)
+{
+  remove(key, column_family, "", column_name);
 }
 
 
@@ -153,6 +160,89 @@ Column Keyspace::getColumn(const string &key,
   return getColumn(key, column_family, "", column_name);
 }
 
+vector<Column> Keyspace::getColumns(
+    const string &key,
+    const string &column_family,
+    const string &super_column_name,
+    const vector<string> column_names)
+{
+
+  ColumnParent col_parent;
+  SlicePredicate pred;
+  vector<ColumnOrSuperColumn> ret_cosc;
+  vector<Column> result;
+
+  col_parent.column_family.assign(column_family);
+  if (! super_column_name.empty()) 
+  {
+    col_parent.super_column.assign(super_column_name);
+    col_parent.__isset.super_column= true;
+  }
+
+  pred.column_names = column_names;
+  pred.__isset.column_names= true;
+
+  client->getCassandra()->get_slice(ret_cosc, name, key, col_parent, pred, level);
+  for (vector<ColumnOrSuperColumn>::iterator it= ret_cosc.begin();
+      it != ret_cosc.end();
+      ++it)
+  {
+    if (! (*it).column.name.empty())
+    {
+      result.push_back((*it).column);
+    }
+  }
+  return result;
+}
+
+vector<Column> Keyspace::getColumns(
+    const string &key,
+    const string &column_family,
+    const vector<string> column_names)
+{
+  return(getColumns(key, column_family, "", column_names));
+}
+
+vector<Column> Keyspace::getColumns(const string &key,
+                           const std::string &column_family,
+                           const std::string &super_column_name,
+                           const org::apache::cassandra::SliceRange &range)
+{
+
+  ColumnParent col_parent;
+  SlicePredicate pred;
+  vector<ColumnOrSuperColumn> ret_cosc;
+  vector<Column> result;
+
+  col_parent.column_family.assign(column_family);
+  if (! super_column_name.empty()) 
+  {
+    col_parent.super_column.assign(super_column_name);
+    col_parent.__isset.super_column= true;
+  }
+
+  pred.slice_range = range;
+  pred.__isset.slice_range= true;
+
+  client->getCassandra()->get_slice(ret_cosc, name, key, col_parent, pred, level);
+  for (vector<ColumnOrSuperColumn>::iterator it= ret_cosc.begin();
+      it != ret_cosc.end();
+      ++it)
+  {
+    if (! (*it).column.name.empty())
+    {
+      result.push_back((*it).column);
+    }
+  }
+  return result;
+}
+
+vector<Column> Keyspace::getColumns(const string &key,
+                           const std::string &column_family,
+                           const org::apache::cassandra::SliceRange &range)
+{
+  return(getColumns(key, column_family, "", range));
+}
 
 string Keyspace::getColumnValue(const string &key,
                                 const string &column_family,
@@ -167,7 +257,7 @@ string Keyspace::getColumnValue(const string &key,
                                 const string &column_family,
                                 const string &column_name)
 {
-	return getColumn(key, column_family, column_name).value;
+  return getColumn(key, column_family, column_name).value;
 }
 
 
@@ -191,50 +281,63 @@ SuperColumn Keyspace::getSuperColumn(const string &key,
   return cosc.super_column;
 }
 
-
-vector<Column> Keyspace::getSliceNames(const string &key,
-                                       const ColumnParent &col_parent,
-                                       SlicePredicate &pred)
+vector<SuperColumn> Keyspace::getSuperColumns(
+    const string &key,
+    const string &column_family,
+    const vector<string> super_column_names)
 {
+
+  ColumnParent col_parent;
+  SlicePredicate pred;
   vector<ColumnOrSuperColumn> ret_cosc;
-  vector<Column> result;
-  /* damn you thrift! */
+  vector<SuperColumn> result;
+
+  col_parent.column_family.assign(column_family);
+
+  pred.column_names = super_column_names;
   pred.__isset.column_names= true;
+
   client->getCassandra()->get_slice(ret_cosc, name, key, col_parent, pred, level);
   for (vector<ColumnOrSuperColumn>::iterator it= ret_cosc.begin();
-       it != ret_cosc.end();
-       ++it)
+      it != ret_cosc.end();
+      ++it)
   {
-    if (! (*it).column.name.empty())
+    if (! (*it).super_column.name.empty())
     {
-      result.push_back((*it).column);
+      result.push_back((*it).super_column);
     }
   }
   return result;
 }
 
-
-vector<Column> Keyspace::getSliceRange(const string &key,
-                                       const ColumnParent &col_parent,
-                                       SlicePredicate &pred)
+vector<SuperColumn> Keyspace::getSuperColumns(
+    const string &key,
+    const string &column_family,
+    const org::apache::cassandra::SliceRange &range)
 {
+
+  ColumnParent col_parent;
+  SlicePredicate pred;
   vector<ColumnOrSuperColumn> ret_cosc;
-  vector<Column> result;
-  /* damn you thrift! */
+  vector<SuperColumn> result;
+
+  col_parent.column_family.assign(column_family);
+
+  pred.slice_range = range;
   pred.__isset.slice_range= true;
+
   client->getCassandra()->get_slice(ret_cosc, name, key, col_parent, pred, level);
   for (vector<ColumnOrSuperColumn>::iterator it= ret_cosc.begin();
-       it != ret_cosc.end();
-       ++it)
+      it != ret_cosc.end();
+      ++it)
   {
-    if (! (*it).column.name.empty())
+    if (! (*it).super_column.name.empty())
     {
-      result.push_back((*it).column);
+      result.push_back((*it).super_column);
     }
   }
   return result;
 }
-
 
 map<string, vector<Column> > Keyspace::getRangeSlice(const ColumnParent &col_parent,
                                                      const SlicePredicate &pred,
