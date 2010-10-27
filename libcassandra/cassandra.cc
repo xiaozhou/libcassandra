@@ -13,6 +13,8 @@
 
 #include <libgenthrift/Cassandra.h>
 
+#include <transport/TSocket.h>
+
 #include "cassandra.h"
 #include "keyspace.h"
 #include "exception.h"
@@ -52,6 +54,21 @@ Cassandra::~Cassandra()
   delete thrift_client;
 }
 
+void Cassandra::setRecvTimeout(int recv_timeout) {
+
+  if (recv_timeout > 0) {
+    boost::shared_ptr<apache::thrift::transport::TSocket> s = boost::dynamic_pointer_cast<apache::thrift::transport::TSocket>( thrift_client->getInputProtocol()->getInputTransport() );
+    s->setRecvTimeout(recv_timeout);
+  }
+
+}
+
+void Cassandra::setSendTimeout(int send_timeout) {
+  if (send_timeout > 0) {
+    boost::shared_ptr<apache::thrift::transport::TSocket> s = boost::dynamic_pointer_cast<apache::thrift::transport::TSocket>( thrift_client->getOutputProtocol()->getOutputTransport() );
+    s->setSendTimeout(send_timeout);
+  }
+}
 
 CassandraClient *Cassandra::getCassandra()
 {

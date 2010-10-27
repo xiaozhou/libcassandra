@@ -15,6 +15,7 @@ using namespace libcassandra;
 
 static string host("127.0.0.1");
 static int port= 9160;
+static int timeout= 5000;
 
 void print_cluster_info(tr1::shared_ptr<Cassandra> client) {
 
@@ -167,8 +168,12 @@ void getcolumns_byrange(tr1::shared_ptr<Cassandra> client) {
 
 int main() {
 
-  CassandraFactory factory(host, port);
+  CassandraFactory factory(host, port, timeout);
   tr1::shared_ptr<Cassandra> client(factory.create());
+
+  // Not really needed since the factory timeout sets all 3 by default:
+  client->setRecvTimeout(timeout);
+  client->setSendTimeout(timeout);
 
   cout << "Cluster Info:" << endl;
   print_cluster_info(client);

@@ -50,6 +50,10 @@ public:
     ON_FAIL_TRY_ALL_AVAILABLE
   };
 
+  void setRecvTimeout(int recv_timeout);
+
+  void setSendTimeout(int send_timeout);
+
   /**
    * @return the underlying cassandra thrift client.
    */

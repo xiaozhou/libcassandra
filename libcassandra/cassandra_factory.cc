@@ -32,7 +32,10 @@ using namespace boost;
 CassandraFactory::CassandraFactory(const string &server_list)
   :
     host(),
-    port(0)
+    port(0),
+    conn_timeout(-1),
+    recv_timeout(-1),
+    send_timeout(-1)
 {
   /* get the host name from the server list string */
   string::size_type pos= server_list.find_first_of(':');
@@ -47,7 +50,19 @@ CassandraFactory::CassandraFactory(const string &server_list)
 CassandraFactory::CassandraFactory(const string &in_host, int in_port)
   :
     host(in_host),
-    port(in_port)
+    port(in_port),
+    conn_timeout(-1),
+    recv_timeout(-1),
+    send_timeout(-1)
+{}
+
+CassandraFactory::CassandraFactory(const string &in_host, int in_port, int in_timeout)
+  :
+    host(in_host),
+    port(in_port),
+    conn_timeout(in_timeout),
+    recv_timeout(in_timeout),
+    send_timeout(in_timeout)
 {}
 
 CassandraFactory::~CassandraFactory() {}
@@ -61,17 +76,31 @@ tr1::shared_ptr<Cassandra> CassandraFactory::create()
 
 tr1::shared_ptr<Cassandra> CassandraFactory::create(int framed_transport)
 {
-  CassandraClient *thrift_client= createThriftClient(host, port, framed_transport);
+  CassandraClient *thrift_client= createThriftClient(host, port, conn_timeout, recv_timeout, send_timeout, framed_transport);
   tr1::shared_ptr<Cassandra> ret(new Cassandra(thrift_client, host, port));
   return ret;
 }
 
 CassandraClient *CassandraFactory::createThriftClient(const string &in_host,
                                                       int in_port, 
+                                                      int in_conn_timeout,
+                                                      int in_recv_timeout,
+                                                      int in_send_timeout,
                                                       int framed_transport)
 {
-  boost::shared_ptr<TTransport> socket(new TSocket(in_host, in_port));
+  boost::shared_ptr<TSocket> socket(new TSocket(in_host, in_port));
   boost::shared_ptr<TTransport> transport;
+
+  if (in_conn_timeout >= 0) {
+    socket->setConnTimeout(in_conn_timeout);
+  }
+  if (in_recv_timeout >= 0) {
+    socket->setRecvTimeout(in_recv_timeout);
+  }
+  if (in_send_timeout >= 0) {
+    socket->setSendTimeout(in_send_timeout);
+  }
+
   if (framed_transport) 
   {
     transport= boost::shared_ptr<TTransport> (new TFramedTransport(socket));
