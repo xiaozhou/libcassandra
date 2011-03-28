@@ -14,11 +14,12 @@
 #include <transport/TSocket.h>
 #include <transport/TTransportUtils.h>
 
-#include <libgenthrift/Cassandra.h>
+#include "libgenthrift/Cassandra.h"
 
-#include "cassandra.h"
-#include "keyspace.h"
-#include "keyspace_factory.h"
+#include "libcassandra/cassandra.h"
+#include "libcassandra/keyspace.h"
+#include "libcassandra/keyspace_definition.h"
+#include "libcassandra/keyspace_factory.h"
 
 using namespace libcassandra;
 using namespace std;
@@ -35,11 +36,11 @@ KeyspaceFactory::~KeyspaceFactory() {}
 
 
 tr1::shared_ptr<Keyspace> KeyspaceFactory::create(Cassandra *client,
-                                                  const string &name,
-                                                  const map< string, map<string, string> > &descrip,
-                                                  ConsistencyLevel level)
+                                                  const string& name,
+                                                  const KeyspaceDefinition& def,
+                                                  ConsistencyLevel::type level)
 {
-  tr1::shared_ptr<Keyspace> ret(new Keyspace(client, name, descrip, level));
+  tr1::shared_ptr<Keyspace> ret(new Keyspace(client, name, def, level));
   return ret;
 }
 

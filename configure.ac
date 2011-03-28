@@ -33,13 +33,15 @@ AC_SEARCH_LIBS(gethostbyname, nsl)
 
 AC_CHECK_FUNCS([getline])
 
-PANDORA_REQUIRE_LIBTHRIFT
+PANDORA_REQUIRE_THRIFT
 
 AC_LANG_PUSH(C++)
 PANDORA_REQUIRE_PTHREAD
 AC_LANG_POP
 
 PANDORA_DRIZZLE_BUILD
+
+PANDORA_HAVE_LIBGTEST
 
 dnl Specialty checks
 DETECT_BYTEORDER
@@ -79,6 +81,7 @@ echo "   * C++ cstdint location:      $ac_cv_cxx_cstdint"
 echo "   * C++ hash_map location:     $ac_cv_cxx_hash_map"
 echo "   * C++ hash namespace:        $ac_cv_cxx_hash_namespace"
 echo "   * C++ shared_ptr namespace:  $ac_cv_shared_ptr_namespace"
+echo "   * THRIFT prefix:             $LIBTHRIFT_PREFIX"
 echo ""
 echo "---"
 

@@ -1,0 +1,4 @@
+usr/lib/*.la
+usr/lib/libcassandra.so
+usr/lib/libgenthrift.so
+usr/include
