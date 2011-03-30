@@ -7,6 +7,52 @@
 
 namespace org { namespace apache { namespace cassandra {
 
+int _kConsistencyLevelValues[] = {
+  ConsistencyLevel::ONE,
+  ConsistencyLevel::QUORUM,
+  ConsistencyLevel::LOCAL_QUORUM,
+  ConsistencyLevel::EACH_QUORUM,
+  ConsistencyLevel::ALL,
+  ConsistencyLevel::ANY,
+  ConsistencyLevel::TWO,
+  ConsistencyLevel::THREE
+};
+const char* _kConsistencyLevelNames[] = {
+  "ONE",
+  "QUORUM",
+  "LOCAL_QUORUM",
+  "EACH_QUORUM",
+  "ALL",
+  "ANY",
+  "TWO",
+  "THREE"
+};
+const std::map<int, const char*> _ConsistencyLevel_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(8, _kConsistencyLevelValues, _kConsistencyLevelNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
+int _kIndexOperatorValues[] = {
+  IndexOperator::EQ,
+  IndexOperator::GTE,
+  IndexOperator::GT,
+  IndexOperator::LTE,
+  IndexOperator::LT
+};
+const char* _kIndexOperatorNames[] = {
+  "EQ",
+  "GTE",
+  "GT",
+  "LTE",
+  "LT"
+};
+const std::map<int, const char*> _IndexOperator_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kIndexOperatorValues, _kIndexOperatorNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
+int _kIndexTypeValues[] = {
+  IndexType::KEYS
+};
+const char* _kIndexTypeNames[] = {
+  "KEYS"
+};
+const std::map<int, const char*> _IndexType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(1, _kIndexTypeValues, _kIndexTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 const char* Column::ascii_fingerprint = "AFF5A2690BB9979816507B2F6BD21062";
 const uint8_t Column::binary_fingerprint[16] = {0xAF,0xF5,0xA2,0x69,0x0B,0xB9,0x97,0x98,0x16,0x50,0x7B,0x2F,0x6B,0xD2,0x10,0x62};
 

@@ -22,9 +22,13 @@ struct ConsistencyLevel {
     LOCAL_QUORUM = 3,
     EACH_QUORUM = 4,
     ALL = 5,
-    ANY = 6
+    ANY = 6,
+    TWO = 7,
+    THREE = 8
   };
 };
+
+extern const std::map<int, const char*> _ConsistencyLevel_VALUES_TO_NAMES;
 
 struct IndexOperator {
   enum type {
@@ -36,11 +40,15 @@ struct IndexOperator {
   };
 };
 
+extern const std::map<int, const char*> _IndexOperator_VALUES_TO_NAMES;
+
 struct IndexType {
   enum type {
     KEYS = 0
   };
 };
+
+extern const std::map<int, const char*> _IndexType_VALUES_TO_NAMES;
 
 typedef struct _Column__isset {
   _Column__isset() : ttl(false) {}
