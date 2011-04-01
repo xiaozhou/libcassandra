@@ -119,9 +119,9 @@ CassandraClient *CassandraFactory::createThriftClient(const string &in_host,
 
   boost::shared_ptr<TTransport> transport = boost::shared_ptr<TTransport>(new TFramedTransport(socket));
   boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
-  CassandraClient *client= new(std::nothrow) CassandraClient(protocol);
-
   transport->open(); /* throws an exception */
+
+  CassandraClient *client= new(std::nothrow) CassandraClient(protocol);
 
   return client;
 }
