@@ -17,17 +17,11 @@ using namespace libcassandra;
 
 static string host("127.0.0.1");
 static int port= 9160;
-static int timeout= 5000;
 
 int main()
 {
-
   CassandraFactory factory(host, port);
   tr1::shared_ptr<Cassandra> client(factory.create());
-
-  // Not really needed since the factory timeout sets all 3 by default:
-  client->setRecvTimeout(timeout);
-  client->setSendTimeout(timeout);
 
   string clus_name= client->getClusterName();
   cout << "cluster name: " << clus_name << endl;

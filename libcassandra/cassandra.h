@@ -15,6 +15,7 @@
 #include <set>
 #include <map>
 #include <tr1/memory>
+#include <tr1/tuple>
 
 #include "../libgenthrift/cassandra_types.h"
 
@@ -36,6 +37,17 @@ namespace libcassandra
 {
 
 class Keyspace;
+
+/**
+ * enclosures the insertion of one column mutate
+ */
+typedef std::tr1::tuple<std::string,  //column family
+  std::string,  //key
+  std::string,  //column name
+  std::string,  //value
+  bool          //is_delete
+  > ColumnMutateTuple;
+
 
 class Cassandra
 {
@@ -520,6 +532,10 @@ public:
    */
   int getPort() const;
 
+  void batchMutate(const std::vector<ColumnMutateTuple> &tuples, const org::apache::cassandra::ConsistencyLevel::type level);
+
+  void batchMutate(const std::vector<ColumnMutateTuple> &tuples);
+
 private:
 
   /**
@@ -536,6 +552,14 @@ private:
   std::string current_keyspace;
   std::vector<KeyspaceDefinition> key_spaces;
   std::map<std::string, std::string> token_map;
+
+  typedef std::map<std::string,
+		           std::map<std::string,
+		           std::vector<org::apache::cassandra::Mutation>
+                  >
+		          > MutationsMap;
+
+  static void addToMap(const ColumnMutateTuple &tuple, MutationsMap &mutations);
 
   Cassandra(const Cassandra&);
   Cassandra &operator=(const Cassandra&);
