@@ -16,6 +16,7 @@
 #include <map>
 #include <tr1/memory>
 #include <tr1/tuple>
+#include <tr1/unordered_map>
 
 #include "../libgenthrift/cassandra_types.h"
 
@@ -348,6 +349,10 @@ public:
   std::vector<org::apache::cassandra::Column> getColumns(const std::string &key,
                                                          const std::string &column_family,
                                                          const std::vector<std::string> column_names);
+
+  std::tr1::unordered_map<std::string, std::string> getColumnsValues(const std::string &key,
+                                            						 const std::string &column_family,
+                                            						 const std::vector<std::string> column_names);
 
   /**
    * Retrieve multiple columns by range

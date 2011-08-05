@@ -411,6 +411,21 @@ vector<Column> Cassandra::getColumns(
   return getColumns(key, column_family, "", column_names, ConsistencyLevel::QUORUM);
 }
 
+tr1::unordered_map<string, string> Cassandra::getColumnsValues(
+    const string &key,
+    const string &column_family,
+    const vector<string> column_names
+    )
+{
+	tr1::unordered_map<string, string> result;
+	vector<Column> columns = getColumns(key, column_family, "", column_names, ConsistencyLevel::QUORUM);
+	for (vector<Column>::iterator it= columns.begin(); it != columns.end(); ++it)
+	{
+		result[(*it).name]=(*it).value;
+	}
+	return result;
+}
+
 vector<Column> Cassandra::getColumns(const string &key,
                            const std::string &column_family,
                            const std::string &super_column_name,
