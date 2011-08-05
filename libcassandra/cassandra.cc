@@ -419,9 +419,16 @@ tr1::unordered_map<string, string> Cassandra::getColumnsValues(
 {
 	tr1::unordered_map<string, string> result;
 	vector<Column> columns = getColumns(key, column_family, "", column_names, ConsistencyLevel::QUORUM);
+        //	uint32_t count = 0;
 	for (vector<Column>::iterator it= columns.begin(); it != columns.end(); ++it)
 	{
 		result[(*it).name]=(*it).value;
+		//count++;
+	}
+	if(columns.size()<column_names.size())
+	{
+	    /* throw an exception */
+	    throw(InvalidRequestException());
 	}
 	return result;
 }
