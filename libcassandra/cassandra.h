@@ -39,16 +39,20 @@ namespace libcassandra
 
 class Keyspace;
 
-/**
- * enclosures the insertion of one column mutate
- */
 typedef std::tr1::tuple<std::string,  //column family
   std::string,  //key
   std::string,  //column name
   std::string,  //value
   bool          //is_delete
-  > ColumnMutateTuple;
+  > ColumnTuple;
 
+typedef std::tr1::tuple<std::string,  //column family
+  std::string,  //key
+  std::string,  //super column name
+  std::string,  //column name
+  std::string,  //value
+  bool          //is_delete
+  > SuperColumnTuple;
 
 class Cassandra
 {
@@ -351,8 +355,13 @@ public:
                                                          const std::vector<std::string> column_names);
 
   std::tr1::unordered_map<std::string, std::string> getColumnsValues(const std::string &key,
-                                            						 const std::string &column_family,
-                                            						 const std::vector<std::string> column_names);
+                                                                     const std::string &column_family,
+                                                                     const std::string &super_column_name,
+                                                                     const std::vector<std::string> column_names);
+
+  std::tr1::unordered_map<std::string, std::string> getColumnsValues(const std::string &key,
+                                              						 const std::string &column_family,
+                                              						 const std::vector<std::string> column_names);
 
   /**
    * Retrieve multiple columns by range
@@ -369,6 +378,7 @@ public:
                                                          const std::string &super_column_name,
                                                          const org::apache::cassandra::SliceRange &range,
                                                          org::apache::cassandra::ConsistencyLevel::type level);
+
   std::vector<org::apache::cassandra::Column> getColumns(const std::string &key,
                                                          const std::string &column_family,
                                                          const std::string &super_column_name,
@@ -537,9 +547,13 @@ public:
    */
   int getPort() const;
 
-  void batchMutate(const std::vector<ColumnMutateTuple> &tuples, const org::apache::cassandra::ConsistencyLevel::type level);
+  void batchMutate(const std::vector<ColumnTuple> &tuples, const org::apache::cassandra::ConsistencyLevel::type level);
 
-  void batchMutate(const std::vector<ColumnMutateTuple> &tuples);
+  void batchMutate(const std::vector<ColumnTuple> &tuples);
+
+  void batchMutate(const std::vector<SuperColumnTuple> &tuples, const org::apache::cassandra::ConsistencyLevel::type level);
+
+  void batchMutate(const std::vector<SuperColumnTuple> &tuples);
 
 private:
 
@@ -564,7 +578,8 @@ private:
                   >
 		          > MutationsMap;
 
-  static void addToMap(const ColumnMutateTuple &tuple, MutationsMap &mutations);
+  static void addToMap(const ColumnTuple &tuple, MutationsMap &mutations);
+  static void addToMap(const SuperColumnTuple &tuple, MutationsMap &mutations);
 
   Cassandra(const Cassandra&);
   Cassandra &operator=(const Cassandra&);
