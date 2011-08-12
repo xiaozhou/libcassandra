@@ -23,7 +23,7 @@ static int port= 10051;
 int main()
 {
 	CassandraFactory factory(host, port);
-	tr1::shared_ptr<Cassandra> client(factory.create());
+	boost::shared_ptr<Cassandra> client(factory.create());
 	typedef std::tr1::unordered_map<string, string> ReadSet;
 
 	try
@@ -32,12 +32,12 @@ int main()
 	  client->setKeyspace("sirikata");
 
 	  /* create standard column family */
-/*	  ColumnFamilyDefinition cf_def;
-	  cf_def.setName("Object_test");
-	  cf_def.setColumnType("Super");
-	  cf_def.setKeyspaceName("sirikata");
-	  client->createColumnFamily(cf_def);
-*/
+	 // ColumnFamilyDefinition cf_def;
+	  //cf_def.setName("Object_test");
+	  //cf_def.setColumnType("Super");
+	  //cf_def.setKeyspaceName("sirikata");
+	  //client->createColumnFamily(cf_def);
+
 	  std::vector<SuperColumnTuple> SupColTuple;
 
 	  SuperColumnTuple t1("Object_test","host_1","object_1","script_type","type_data_1",false);

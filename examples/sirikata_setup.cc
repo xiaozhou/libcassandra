@@ -25,34 +25,34 @@ static int port= 10051;
 int main()
 {
 	CassandraFactory factory(host, port);
-	tr1::shared_ptr<Cassandra> client(factory.create());
+	boost::shared_ptr<Cassandra> client(factory.create());
 
-	/*string clus_name= client->getClusterName();
+	string clus_name= client->getClusterName();
 	cout << "cluster name: " << clus_name << endl;
 
 	vector<KeyspaceDefinition> key_out= client->getKeyspaces();
 	for (vector<KeyspaceDefinition>::iterator it = key_out.begin(); it != key_out.end(); ++it){
 	  cout << "keyspace: " << (*it).getName() << endl;
-	}*/
+	}
 
 	try
 	{
 		// create keyspace
-		//KeyspaceDefinition ks_def;
-		//ks_def.setName("sirikata");
+		KeyspaceDefinition ks_def;
+		ks_def.setName("sirikata");
 		//client->createKeyspace(ks_def);
 		client->setKeyspace("sirikata");
 
-		/*ColumnFamilyDefinition cf_def_1;
+		ColumnFamilyDefinition cf_def_1;
 		cf_def_1.setName("persistence");
 		cf_def_1.setKeyspaceName("sirikata");
-		client->createColumnFamily(cf_def_1);
+		//client->createColumnFamily(cf_def_1);
 
 		ColumnFamilyDefinition cf_def_2;
 		cf_def_2.setName("objects");
 		cf_def_2.setColumnType("Super");
 		cf_def_2.setKeyspaceName("sirikata");
-		client->createColumnFamily(cf_def_2);*/
+		//client->createColumnFamily(cf_def_2);
 
 		// insert data
 		client->insertColumn("persistence_test", CF_NAME_PER, "a", "abcde");

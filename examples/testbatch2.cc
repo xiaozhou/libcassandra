@@ -21,7 +21,7 @@ static int port= 10051;
 int main()
 {
 	CassandraFactory factory(host, port);
-	tr1::shared_ptr<Cassandra> client(factory.create());
+	boost::shared_ptr<Cassandra> client(factory.create());
 
         typedef std::tr1::unordered_map<string, string> ReadSet;
 
@@ -33,14 +33,14 @@ int main()
 
 	  client->setKeyspace("sirikata");
 
-	  std::vector<ColumnMutateTuple> ColumnTuples;
+	  std::vector<ColumnTuple> ColumnTuples;
           std::vector<string> ColumnNames;
 
-          ColumnMutateTuple t1("Persistence","key_1","a","abcde",write);
-	  ColumnMutateTuple t2("Persistence","key_1","f","fghij",write);
-	  ColumnMutateTuple t3("Persistence","key_1","k","klmno",write);
-	  ColumnMutateTuple t4("Persistence","key_1","p","pqrst",write);
-	  ColumnMutateTuple t5("Persistence","key_1","u","uvwxy",write);
+          ColumnTuple t1("persistence","key_1","a","abcde",write);
+	  ColumnTuple t2("persistence","key_1","f","fghij",write);
+	  ColumnTuple t3("persistence","key_1","k","klmno",write);
+	  ColumnTuple t4("persistence","key_1","p","pqrst",write);
+	  ColumnTuple t5("persistence","key_1","u","uvwxy",write);
 
 	  ColumnTuples.push_back(t1);
 	  ColumnTuples.push_back(t2);
@@ -56,25 +56,25 @@ int main()
 
 	  client->batchMutate(ColumnTuples);
 	 
-          //string res= client->getColumnValue("key_1", "Persistence", "a");
+          //string res= client->getColumnValue("key_1", "persistence", "a");
 	  //cout << "value: " <<res<<endl;
-	  //res= client->getColumnValue("key_1", "Persistence", "k");
+	  //res= client->getColumnValue("key_1", "persistence", "k");
 	  //cout << "value: " <<res<<endl;
 	  ColumnTuples.clear();
           
           //ColumnNames.push_back("k");     
-          ReadSet rs = client->getColumnsValues("key_1", "Persistence", ColumnNames);
+          ReadSet rs = client->getColumnsValues("key_1", "persistence", ColumnNames);
           cout<<"a: "<<rs["a"]<<endl;
           cout<<"f: "<<rs["f"]<<endl;
           cout<<"k: "<<rs["k"]<<endl;
           cout<<"p: "<<rs["p"]<<endl;
           cout<<"u: "<<rs["u"]<<endl;
 
-          t1 = ColumnMutateTuple("Persistence","key_1","a","",erase);
-          t2 = ColumnMutateTuple("Persistence","key_1","f","",erase);
-          t3 = ColumnMutateTuple("Persistence","key_1","k","",erase);
-          //t4 = ColumnMutateTuple("Persistence","key_1","p","",erase);
-          //t5 = ColumnMutateTuple("Persistence","key_1","u","",erase);
+          t1 = ColumnTuple("persistence","key_1","a","",erase);
+          t2 = ColumnTuple("persistence","key_1","f","",erase);
+          t3 = ColumnTuple("persistence","key_1","k","",erase);
+          //t4 = ColumnTuple("persistence","key_1","p","",erase);
+          //t5 = ColumnTuple("persistence","key_1","u","",erase);
 
 	  ColumnTuples.push_back(t1);
 	  ColumnTuples.push_back(t2);
@@ -84,7 +84,7 @@ int main()
 
           client->batchMutate(ColumnTuples);
 
-          rs = client->getColumnsValues("key_1", "Persistence", ColumnNames);
+          rs = client->getColumnsValues("key_1", "persistence", ColumnNames);
           cout<<"a: "<<rs["a"]<<endl;
           cout<<"f: "<<rs["f"]<<endl;
           cout<<"k: "<<rs["k"]<<endl;

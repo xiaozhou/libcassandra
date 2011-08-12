@@ -21,7 +21,7 @@ static int port= 9160;
 int main()
 {
   CassandraFactory factory(host, port);
-  tr1::shared_ptr<Cassandra> client(factory.create());
+  boost::shared_ptr<Cassandra> client(factory.create());
 
   string clus_name= client->getClusterName();
   cout << "cluster name: " << clus_name << endl;
