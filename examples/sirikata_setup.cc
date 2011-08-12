@@ -15,66 +15,89 @@
 using namespace std;
 using namespace libcassandra;
 
-static string host("127.0.0.1");
-static int port= 9160;
+static string host("localhost");
+static int port= 10051;
+
+#define KS_NAME     "sirikata"
+#define CF_NAME_PER "persistence"
+#define CF_NAME_OBJ "objects"
 
 int main()
 {
 	CassandraFactory factory(host, port);
 	tr1::shared_ptr<Cassandra> client(factory.create());
 
-	string clus_name= client->getClusterName();
+	/*string clus_name= client->getClusterName();
 	cout << "cluster name: " << clus_name << endl;
 
 	vector<KeyspaceDefinition> key_out= client->getKeyspaces();
-	for (vector<KeyspaceDefinition>::iterator it = key_out.begin(); it != key_out.end(); ++it)
-	{
+	for (vector<KeyspaceDefinition>::iterator it = key_out.begin(); it != key_out.end(); ++it){
 	  cout << "keyspace: " << (*it).getName() << endl;
-	}
+	}*/
 
 	try
 	{
-	  // create keyspace 
-	  KeyspaceDefinition ks_def;
-	  ks_def.setName("sirikata");
-	  client->createKeyspace(ks_def);
-	  client->setKeyspace(ks_def.getName());
+		// create keyspace
+		//KeyspaceDefinition ks_def;
+		//ks_def.setName("sirikata");
+		//client->createKeyspace(ks_def);
+		client->setKeyspace("sirikata");
 
-	  //  create standard column family 
-	  ColumnFamilyDefinition cf_def;
-	  cf_def.setName("Persistence");
-	  cf_def.setKeyspaceName(ks_def.getName());
-	  client->createColumnFamily(cf_def);
+		/*ColumnFamilyDefinition cf_def_1;
+		cf_def_1.setName("persistence");
+		cf_def_1.setKeyspaceName("sirikata");
+		client->createColumnFamily(cf_def_1);
 
-//	  client->setKeyspace("sirikata");
+		ColumnFamilyDefinition cf_def_2;
+		cf_def_2.setName("objects");
+		cf_def_2.setColumnType("Super");
+		cf_def_2.setKeyspaceName("sirikata");
+		client->createColumnFamily(cf_def_2);*/
 
-	  // insert data 
-	  client->insertColumn("72a537a6c18f48fea97d90b40727062e", "Persistence", "a", "abcde");
+		// insert data
+		client->insertColumn("persistence_test", CF_NAME_PER, "a", "abcde");
+		// retrieve that data
+		string res= client->getColumnValue("persistence_test", CF_NAME_PER, "a");
+		cout << "persistence -- read after insert: " <<res<<endl;
+		// remove that data
+		client->remove("persistence_test", CF_NAME_PER, "", "a");
+		// retrieve that data again
+		res= client->getColumnValue("persistence_test", CF_NAME_PER, "a");
+		cout << "persistence -- read after erase: " <<res<<endl;
 
-          // retrieve that data
-          string res= client->getColumnValue("72a537a6c18f48fea97d90b40727062e", "Persistence", "a");
-          cout << "value: " <<res<<endl;
 
-	  // remove that data 
-          client->remove("72a537a6c18f48fea97d90b40727062e", "Persistence", "", "a");
-          
-	  // retrieve that data again
-	  res= client->getColumnValue("72a537a6c18f48fea97d90b40727062e", "Persistence", "a");
-          cout << "value: " <<res<<endl;
-        }
-        catch (org::apache::cassandra::NotFoundException &ire)
-	  {
+	}
+	catch (org::apache::cassandra::NotFoundException &ire){
 	    cout <<"NotFoundException Caught" << endl;
-	    return 1;
-	  }
-	catch (org::apache::cassandra::InvalidRequestException &ire)
-	  {
+	}
+	catch (org::apache::cassandra::InvalidRequestException &ire){
 	    cout << ire.why << endl;
-	    return 1;
-	  }
+	}
+	catch (...){
+		cout << "Other Exception Caught" << endl;
+	}
 
-        return 0;
-
+	try{
+		// insert data
+		client->insertColumn("objects_test", CF_NAME_OBJ, "sup", "f", "fhijk");
+		// retrieve that data
+		string res= client->getColumnValue("objects_test", CF_NAME_OBJ, "sup", "f");
+		cout << "objects -- read after insert: " <<res<<endl;
+		// remove that data
+		client->remove("objects_test", CF_NAME_OBJ, "sup", "f");
+		// retrieve that data again
+		res= client->getColumnValue("persistence_test", CF_NAME_OBJ, "sup", "f");
+		cout << "objects -- read after erase: " <<res<<endl;
+	}
+	catch (org::apache::cassandra::NotFoundException &ire){
+	    cout <<"NotFoundException Caught" << endl;
+	}
+	catch (org::apache::cassandra::InvalidRequestException &ire){
+	    cout << ire.why << endl;
+	}
+	catch (...){
+		cout << "Other Exception Caught" << endl;
+	}
 
 	return 0;
 }
