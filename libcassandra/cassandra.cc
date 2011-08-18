@@ -414,7 +414,7 @@ vector<Column> Cassandra::getColumns(
 tr1::unordered_map<string, string> Cassandra::getColumnsValues(
     const string &key,
     const string &column_family,
-    const std::string &super_column_name,
+    const string &super_column_name,
     const vector<string> column_names
     )
 {
@@ -862,20 +862,20 @@ void Cassandra::addToMap(const ColumnTuple &tuple, MutationsMap &mutations)
   Mutation mutation;
 
   if(!is_delete){
-          mutation.column_or_supercolumn.column.name      = name;
-          mutation.column_or_supercolumn.column.value     = value;
-          mutation.column_or_supercolumn.column.timestamp = createTimestamp();
-          mutation.column_or_supercolumn.__isset.column   = true;
-          mutation.__isset.column_or_supercolumn          = true;
+      mutation.__isset.column_or_supercolumn          = true;
+      mutation.column_or_supercolumn.__isset.column   = true;
+	  mutation.column_or_supercolumn.column.name      = name;
+      mutation.column_or_supercolumn.column.value     = value;
+      mutation.column_or_supercolumn.column.timestamp = createTimestamp();
   }
 
   if(is_delete){
-          std::vector<std::string> column_names(1,name);
-          mutation.deletion.predicate.column_names        = column_names;
-          mutation.deletion.timestamp                     = createTimestamp();
-          mutation.deletion.__isset.predicate             = true;
-          mutation.__isset.deletion                       = true;
-          mutation.deletion.predicate.__isset.column_names= true;
+      mutation.__isset.deletion                       = true;
+      mutation.deletion.timestamp                     = createTimestamp();
+
+      mutation.deletion.__isset.predicate             = true;
+      mutation.deletion.predicate.__isset.column_names= true;
+      mutation.deletion.predicate.column_names.push_back(name);
   }
 
   if (mutations.find(key) == mutations.end()) {
@@ -909,34 +909,40 @@ void Cassandra::addToMap(const SuperColumnTuple &tuple, MutationsMap &mutations)
   Mutation mutation;
 
   if(!is_delete){
-	  	  mutation.column_or_supercolumn.super_column.name    = super_name;
-          mutation.column_or_supercolumn.__isset.super_column = true;
-          mutation.__isset.column_or_supercolumn              = true;
-          Column column;
-          column.name = name;
-          column.value = value;
-          column.timestamp = createTimestamp();
-          mutation.column_or_supercolumn.super_column.columns.push_back(column);
+      mutation.__isset.column_or_supercolumn              = true;
+      mutation.column_or_supercolumn.__isset.super_column = true;
+      mutation.column_or_supercolumn.super_column.name    = super_name;
+
+      Column column;
+      column.name = name;
+      column.value = value;
+      column.timestamp = createTimestamp();
+      mutation.column_or_supercolumn.super_column.columns.push_back(column);
   }
 
   if(is_delete){
-	  	  mutation.__isset.deletion              = true;
-	  	  mutation.deletion.__isset.super_column = true;
-	  	  mutation.deletion.super_column         = super_name;
-          mutation.deletion.timestamp            = createTimestamp();
+      mutation.__isset.deletion                       = true;
+      mutation.deletion.timestamp                     = createTimestamp();
+
+      mutation.deletion.__isset.super_column          = true;
+      mutation.deletion.super_column                  = super_name;
+
+      mutation.deletion.__isset.predicate             = true;
+      mutation.deletion.predicate.__isset.column_names= true;
+      mutation.deletion.predicate.column_names.push_back(name);
   }
 
   if (mutations.find(key) == mutations.end()) {
-    mutations[key] = std::map<std::string,
-                     std::vector<Mutation> >();
+	  mutations[key] = std::map<std::string,
+                       std::vector<Mutation> >();
   }
 
   std::map<std::string,
-             std::vector<Mutation>
+           std::vector<Mutation>
           > &mutations_per_cf = mutations[key];
 
   if (mutations_per_cf.find(column_family) == mutations_per_cf.end()) {
-    mutations_per_cf[column_family] = std::vector<Mutation>();
+	  mutations_per_cf[column_family] = std::vector<Mutation>();
   }
 
   std::vector<Mutation> &mutation_list = mutations_per_cf[column_family];
