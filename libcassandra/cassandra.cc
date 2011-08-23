@@ -851,27 +851,6 @@ void Cassandra::batchMutate(const vector<SuperColumnTuple> &tuples){
     batchMutate(tuples, ConsistencyLevel::QUORUM);
 }
 
-void Cassandra::batchMutate(const vector<insertSuperColumnTuple> &ituples, const vector<removeSuperColumnTuple> &rtuples,
-		  ConsistencyLevel::type level) {
-    MutationsMap mutations;
-
-    for (vector<insertSuperColumnTuple>::const_iterator tuple = ituples.begin();
-    		tuple != ituples.end(); tuple++) {
-    	addToMap(*tuple, mutations);
-    }
-
-    for (vector<removeSuperColumnTuple>::const_iterator tuple = rtuples.begin();
-    		tuple != rtuples.end(); tuple++) {
-    	addToMap(*tuple, mutations);
-    }
-
-    thrift_client->batch_mutate(mutations, level);
-}
-
-void Cassandra::batchMutate(const vector<insertSuperColumnTuple> &ituples, const vector<removeSuperColumnTuple> &rtuples) {
-    batchMutate(ituples, rtuples, ConsistencyLevel::QUORUM);
-}
-
 void Cassandra::batchMutate(const vector<batchSuperColumnTuple> &tuples, const org::apache::cassandra::ConsistencyLevel::type level) {
     MutationsMap mutations;
     for (vector<batchSuperColumnTuple>::const_iterator tuple = tuples.begin();
@@ -884,6 +863,17 @@ void Cassandra::batchMutate(const vector<batchSuperColumnTuple> &tuples, const o
 
 void Cassandra::batchMutate(const vector<batchSuperColumnTuple> &tuples) {
     batchMutate(tuples, ConsistencyLevel::QUORUM); 
+}
+
+void Cassandra::batchMutate(const batchSuperColumnTuple &tuple, const org::apache::cassandra::ConsistencyLevel::type level) {
+    MutationsMap mutations;
+    addToMap(tuple, mutations);
+
+    thrift_client->batch_mutate(mutations, level);
+}
+
+void Cassandra::batchMutate(const batchSuperColumnTuple &tuple) {
+    batchMutate(tuple, ConsistencyLevel::QUORUM);
 }
 
 void Cassandra::addToMap(const ColumnTuple &tuple, MutationsMap &mutations)

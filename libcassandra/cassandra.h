@@ -573,15 +573,14 @@ public:
   void batchMutate(const std::vector<SuperColumnTuple> &tuples, const org::apache::cassandra::ConsistencyLevel::type level);
 
   void batchMutate(const std::vector<SuperColumnTuple> &tuples);
-
-  void batchMutate(const std::vector<insertSuperColumnTuple> &ituples, const std::vector<removeSuperColumnTuple> &rtuples,
-		  const org::apache::cassandra::ConsistencyLevel::type level);
-
-  void batchMutate(const std::vector<insertSuperColumnTuple> &ituples, const std::vector<removeSuperColumnTuple> &rtuples);
   
   void batchMutate(const std::vector<batchSuperColumnTuple> &tuples, const org::apache::cassandra::ConsistencyLevel::type level);
   
   void batchMutate(const std::vector<batchSuperColumnTuple> &tuples);
+
+  void batchMutate(const batchSuperColumnTuple &tuple, const org::apache::cassandra::ConsistencyLevel::type level);
+
+  void batchMutate(const batchSuperColumnTuple &tuple);
 
 
 private:
