@@ -429,7 +429,7 @@ tr1::unordered_map<string, string> Cassandra::getColumnsValues(
 	if(columns.size()<column_names.size())
 	{
 	    /* throw an exception */
-	    throw(InvalidRequestException());
+	    throw(NotFoundException());
 	}
 	return result;
 }
@@ -821,7 +821,7 @@ bool Cassandra::findKeyspace(const string& name)
   return false;
 }
 
-void Cassandra::batchMutate(const std::vector<ColumnTuple> &tuples, const org::apache::cassandra::ConsistencyLevel::type level){
+void Cassandra::batchMutate(const vector<ColumnTuple> &tuples, const ConsistencyLevel::type level){
 	MutationsMap mutations;
 
     for (std::vector<ColumnTuple>::const_iterator tuple = tuples.begin();
@@ -832,14 +832,14 @@ void Cassandra::batchMutate(const std::vector<ColumnTuple> &tuples, const org::a
     thrift_client->batch_mutate(mutations, level);
 }
 
-void Cassandra::batchMutate(const std::vector<ColumnTuple> &tuples){
+void Cassandra::batchMutate(const vector<ColumnTuple> &tuples){
 	batchMutate(tuples, ConsistencyLevel::QUORUM);
 }
 
-void Cassandra::batchMutate(const std::vector<SuperColumnTuple> &tuples, const org::apache::cassandra::ConsistencyLevel::type level){
+void Cassandra::batchMutate(const vector<SuperColumnTuple> &tuples, const ConsistencyLevel::type level){
 	MutationsMap mutations;
 
-    for (std::vector<SuperColumnTuple>::const_iterator tuple = tuples.begin();
+    for (vector<SuperColumnTuple>::const_iterator tuple = tuples.begin();
     		tuple != tuples.end(); tuple++) {
     	addToMap(*tuple, mutations);
     }
@@ -847,24 +847,59 @@ void Cassandra::batchMutate(const std::vector<SuperColumnTuple> &tuples, const o
     thrift_client->batch_mutate(mutations, level);
 }
 
-void Cassandra::batchMutate(const std::vector<SuperColumnTuple> &tuples){
-	batchMutate(tuples, ConsistencyLevel::QUORUM);
+void Cassandra::batchMutate(const vector<SuperColumnTuple> &tuples){
+    batchMutate(tuples, ConsistencyLevel::QUORUM);
+}
+
+void Cassandra::batchMutate(const vector<insertSuperColumnTuple> &ituples, const vector<removeSuperColumnTuple> &rtuples,
+		  ConsistencyLevel::type level) {
+    MutationsMap mutations;
+
+    for (vector<insertSuperColumnTuple>::const_iterator tuple = ituples.begin();
+    		tuple != ituples.end(); tuple++) {
+    	addToMap(*tuple, mutations);
+    }
+
+    for (vector<removeSuperColumnTuple>::const_iterator tuple = rtuples.begin();
+    		tuple != rtuples.end(); tuple++) {
+    	addToMap(*tuple, mutations);
+    }
+
+    thrift_client->batch_mutate(mutations, level);
+}
+
+void Cassandra::batchMutate(const vector<insertSuperColumnTuple> &ituples, const vector<removeSuperColumnTuple> &rtuples) {
+    batchMutate(ituples, rtuples, ConsistencyLevel::QUORUM);
+}
+
+void Cassandra::batchMutate(const vector<batchSuperColumnTuple> &tuples, const org::apache::cassandra::ConsistencyLevel::type level) {
+    MutationsMap mutations;
+    for (vector<batchSuperColumnTuple>::const_iterator tuple = tuples.begin();
+    		tuple != tuples.end(); tuple++) {
+    	addToMap(*tuple, mutations);
+    }    
+    
+    thrift_client->batch_mutate(mutations, level);  
+}
+
+void Cassandra::batchMutate(const vector<batchSuperColumnTuple> &tuples) {
+    batchMutate(tuples, ConsistencyLevel::QUORUM); 
 }
 
 void Cassandra::addToMap(const ColumnTuple &tuple, MutationsMap &mutations)
 {
-  std::string column_family = std::tr1::get<0>(tuple);
-  std::string key           = std::tr1::get<1>(tuple);
-  std::string name          = std::tr1::get<2>(tuple);
-  std::string value         = std::tr1::get<3>(tuple);
-  bool is_delete            = std::tr1::get<4>(tuple);
+  string column_family = tr1::get<0>(tuple);
+  string key           = tr1::get<1>(tuple);
+  string name          = tr1::get<2>(tuple);
+  string value         = tr1::get<3>(tuple);
+  bool is_delete       = tr1::get<4>(tuple);
 
   Mutation mutation;
 
   if(!is_delete){
       mutation.__isset.column_or_supercolumn          = true;
       mutation.column_or_supercolumn.__isset.column   = true;
-	  mutation.column_or_supercolumn.column.name      = name;
+      mutation.column_or_supercolumn.column.name      = name;
       mutation.column_or_supercolumn.column.value     = value;
       mutation.column_or_supercolumn.column.timestamp = createTimestamp();
   }
@@ -879,19 +914,19 @@ void Cassandra::addToMap(const ColumnTuple &tuple, MutationsMap &mutations)
   }
 
   if (mutations.find(key) == mutations.end()) {
-    mutations[key] = std::map<std::string,
-                     std::vector<Mutation> >();
+    mutations[key] = map<string,
+                        vector<Mutation> >();
   }
 
-  std::map<std::string,
-             std::vector<Mutation>
-          > &mutations_per_cf = mutations[key];
+  map<string,
+      vector<Mutation>
+     > &mutations_per_cf = mutations[key];
 
   if (mutations_per_cf.find(column_family) == mutations_per_cf.end()) {
     mutations_per_cf[column_family] = std::vector<Mutation>();
   }
 
-  std::vector<Mutation> &mutation_list = mutations_per_cf[column_family];
+  vector<Mutation> &mutation_list = mutations_per_cf[column_family];
 
   mutation_list.push_back(mutation);
 
@@ -899,12 +934,12 @@ void Cassandra::addToMap(const ColumnTuple &tuple, MutationsMap &mutations)
 
 void Cassandra::addToMap(const SuperColumnTuple &tuple, MutationsMap &mutations)
 {
-  std::string column_family = std::tr1::get<0>(tuple);
-  std::string key           = std::tr1::get<1>(tuple);
-  std::string super_name    = std::tr1::get<2>(tuple);
-  std::string name          = std::tr1::get<3>(tuple);
-  std::string value         = std::tr1::get<4>(tuple);
-  bool is_delete            = std::tr1::get<5>(tuple);
+  string column_family = tr1::get<0>(tuple);
+  string key           = tr1::get<1>(tuple);
+  string super_name    = tr1::get<2>(tuple);
+  string name          = tr1::get<3>(tuple);
+  string value         = tr1::get<4>(tuple);
+  bool is_delete       = tr1::get<5>(tuple);
 
   Mutation mutation;
 
@@ -933,20 +968,121 @@ void Cassandra::addToMap(const SuperColumnTuple &tuple, MutationsMap &mutations)
   }
 
   if (mutations.find(key) == mutations.end()) {
-	  mutations[key] = std::map<std::string,
-                       std::vector<Mutation> >();
+	  mutations[key] = map<string,
+                           vector<Mutation> >();
   }
 
-  std::map<std::string,
-           std::vector<Mutation>
-          > &mutations_per_cf = mutations[key];
+  map<string,
+      vector<Mutation>
+     > &mutations_per_cf = mutations[key];
 
   if (mutations_per_cf.find(column_family) == mutations_per_cf.end()) {
-	  mutations_per_cf[column_family] = std::vector<Mutation>();
+	  mutations_per_cf[column_family] = vector<Mutation>();
   }
 
-  std::vector<Mutation> &mutation_list = mutations_per_cf[column_family];
+  vector<Mutation> &mutation_list = mutations_per_cf[column_family];
 
   mutation_list.push_back(mutation);
 
+}
+
+void Cassandra::addToMap(const insertSuperColumnTuple &tuple, MutationsMap &mutations)
+{
+  string column_family   = tr1::get<0>(tuple);
+  string key             = tr1::get<1>(tuple);
+  string super_name      = tr1::get<2>(tuple);
+  vector<Column> columns = tr1::get<3>(tuple);
+
+  Mutation mutation;
+
+  mutation.__isset.column_or_supercolumn              = true;
+  mutation.column_or_supercolumn.__isset.super_column = true;
+  mutation.column_or_supercolumn.super_column.name    = super_name;
+  mutation.column_or_supercolumn.super_column.columns = columns;
+
+  map<string,
+      vector<Mutation>
+     > &mutations_per_cf = mutations[key];
+
+  if (mutations_per_cf.find(column_family) == mutations_per_cf.end()) {
+    mutations_per_cf[column_family] = std::vector<Mutation>();
+  }
+
+  vector<Mutation> &mutation_list = mutations_per_cf[column_family];
+
+  mutation_list.push_back(mutation);
+}
+
+void Cassandra::addToMap(const removeSuperColumnTuple &tuple, MutationsMap &mutations)
+{
+  string column_family = tr1::get<0>(tuple);
+  string key           = tr1::get<1>(tuple);
+  string super_name    = tr1::get<2>(tuple);
+  vector<string> names = tr1::get<3>(tuple);
+
+  Mutation mutation;
+
+  mutation.__isset.deletion                        = true;
+  mutation.deletion.__isset.super_column           = true;
+  mutation.deletion.super_column                   = super_name;
+  mutation.deletion.__isset.predicate              = true;
+  mutation.deletion.predicate.__isset.column_names = true;
+  mutation.deletion.predicate.column_names         = names;
+
+  map<string,
+      vector<Mutation>
+     > &mutations_per_cf = mutations[key];
+
+  if (mutations_per_cf.find(column_family) == mutations_per_cf.end()) {
+    mutations_per_cf[column_family] = std::vector<Mutation>();
+  }
+
+  vector<Mutation> &mutation_list = mutations_per_cf[column_family];
+
+  mutation_list.push_back(mutation);
+}
+
+void Cassandra::addToMap(const batchSuperColumnTuple &tuple, MutationsMap &mutations)
+{
+  string column_family   = tr1::get<0>(tuple);
+  string key             = tr1::get<1>(tuple);
+  string super_name      = tr1::get<2>(tuple);
+  vector<Column> columns = tr1::get<3>(tuple);
+  vector<string> names   = tr1::get<4>(tuple);
+  
+  map<string,
+      vector<Mutation>
+     > &mutations_per_cf = mutations[key];
+
+  if (mutations_per_cf.find(column_family) == mutations_per_cf.end()) {
+    mutations_per_cf[column_family] = std::vector<Mutation>();
+  }
+
+  vector<Mutation> &mutation_list = mutations_per_cf[column_family];  
+  
+  if(columns.size()>0){
+    Mutation mutation_i;
+
+    mutation_i.__isset.column_or_supercolumn              = true;
+    mutation_i.column_or_supercolumn.__isset.super_column = true;
+    mutation_i.column_or_supercolumn.super_column.name    = super_name;
+    mutation_i.column_or_supercolumn.super_column.columns = columns;
+     
+    mutation_list.push_back(mutation_i);
+  }
+     
+  if(names.size()>0){
+
+    Mutation mutation_d;
+
+    mutation_d.__isset.deletion                        = true;
+    mutation_d.deletion.timestamp                      = createTimestamp();
+    mutation_d.deletion.__isset.super_column           = true;
+    mutation_d.deletion.super_column                   = super_name;
+    mutation_d.deletion.__isset.predicate              = true;
+    mutation_d.deletion.predicate.__isset.column_names = true;
+    mutation_d.deletion.predicate.column_names         = names;
+
+    mutation_list.push_back(mutation_d);  
+  }
 }

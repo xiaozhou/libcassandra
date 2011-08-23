@@ -54,6 +54,25 @@ typedef std::tr1::tuple<std::string,  //column family
   bool          //is_delete
   > SuperColumnTuple;
 
+typedef std::tr1::tuple<std::string,  //column family
+  std::string,         //key
+  std::string,         //super column name
+  std::vector<org::apache::cassandra::Column>  //columns
+  > insertSuperColumnTuple;
+
+typedef std::tr1::tuple<std::string,  //column family
+  std::string,              //row key
+  std::string,              //super column name
+  std::vector<std::string>  //column names
+  > removeSuperColumnTuple;
+
+typedef std::tr1::tuple<std::string,  //column family
+  std::string,              //row key
+  std::string,              //super column name
+  std::vector<org::apache::cassandra::Column>,  //columns for insertion
+  std::vector<std::string>  //column names for deletion
+  > batchSuperColumnTuple;
+
 class Cassandra
 {
 
@@ -555,6 +574,16 @@ public:
 
   void batchMutate(const std::vector<SuperColumnTuple> &tuples);
 
+  void batchMutate(const std::vector<insertSuperColumnTuple> &ituples, const std::vector<removeSuperColumnTuple> &rtuples,
+		  const org::apache::cassandra::ConsistencyLevel::type level);
+
+  void batchMutate(const std::vector<insertSuperColumnTuple> &ituples, const std::vector<removeSuperColumnTuple> &rtuples);
+  
+  void batchMutate(const std::vector<batchSuperColumnTuple> &tuples, const org::apache::cassandra::ConsistencyLevel::type level);
+  
+  void batchMutate(const std::vector<batchSuperColumnTuple> &tuples);
+
+
 private:
 
   /**
@@ -573,13 +602,16 @@ private:
   std::map<std::string, std::string> token_map;
 
   typedef std::map<std::string,
-		           std::map<std::string,
-		           std::vector<org::apache::cassandra::Mutation>
+		   std::map<std::string,
+		   std::vector<org::apache::cassandra::Mutation>
                   >
-		          > MutationsMap;
+		  > MutationsMap;
 
   static void addToMap(const ColumnTuple &tuple, MutationsMap &mutations);
   static void addToMap(const SuperColumnTuple &tuple, MutationsMap &mutations);
+  static void addToMap(const insertSuperColumnTuple &tuple, MutationsMap &mutations);
+  static void addToMap(const removeSuperColumnTuple &tuple, MutationsMap &mutations);
+  static void addToMap(const batchSuperColumnTuple &tuple, MutationsMap &mutations);
 
   Cassandra(const Cassandra&);
   Cassandra &operator=(const Cassandra&);
