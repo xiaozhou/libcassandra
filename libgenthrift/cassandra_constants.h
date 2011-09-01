@@ -6,7 +6,9 @@
 #ifndef cassandra_CONSTANTS_H
 #define cassandra_CONSTANTS_H
 
-#include <string>
+#include "cassandra_types.h"
+
+#undef VERSION
 
 namespace org { namespace apache { namespace cassandra {
 

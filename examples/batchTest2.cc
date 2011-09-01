@@ -35,20 +35,9 @@ int main()
     vector<Column> Columns;
     vector<string> Names;
 
-    Column C1;
-    C1.name  = "a";
-    C1.value = "abcd!";
-    C1.timestamp = createTimestamp();
-        
-    Column C2;
-    C2.name  = "e";
-    C2.value = "efgh!";
-    C2.timestamp = createTimestamp();
-        
-    Column C3;
-    C3.name  = "i";
-    C3.value = "ijkl!";
-    C3.timestamp = createTimestamp();
+    Column C1 = createColumn("a", "[abcd]");
+    Column C2 = createColumn("e", "[efgh]");
+    Column C3 = createColumn("i", "[ijkl]");
         
     Columns.push_back(C1);
     Columns.push_back(C2);
@@ -65,15 +54,8 @@ int main()
     cout<<"e: "<<rs["e"]<<endl;
     cout<<"i: "<<rs["i"]<<endl;
 
-    Column C4;
-    C4.name  = "m";
-    C4.value = "mnop%";
-    C4.timestamp = createTimestamp();
-         
-    Column C5;
-    C5.name  = "q";
-    C5.value = "qrst%";
-    C5.timestamp = createTimestamp();
+    Column C4 = createColumn("m", "(mnop)");
+    Column C5 = createColumn("q", "(qrst)");
         
     Columns.push_back(C4);
     Columns.push_back(C5);

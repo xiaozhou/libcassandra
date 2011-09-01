@@ -151,7 +151,9 @@ void Cassandra::insertColumn(const string& key,
   Column col;
   col.name.assign(column_name);
   col.value.assign(value);
-  col.timestamp= createTimestamp();
+  col.__isset.value = true;
+  col.timestamp = createTimestamp();
+  col.__isset.timestamp = true;
   if (ttl) 
   {
     col.ttl=ttl;
@@ -879,6 +881,17 @@ void Cassandra::batchMutate(const batchSuperColumnTuple &tuple) {
     batchMutate(tuple, ConsistencyLevel::QUORUM);
 }
 
+void Cassandra::batchRemove(const SliceRangeSuperColumnTuple &tuple, const org::apache::cassandra::ConsistencyLevel::type level) {
+    MutationsMap mutations;
+    addToMap(tuple, mutations);
+
+    thrift_client->batch_mutate(mutations, level);
+}
+
+void Cassandra::batchRemove(const SliceRangeSuperColumnTuple &tuple) {
+    batchRemove(tuple, ConsistencyLevel::QUORUM);
+}
+
 void Cassandra::addToMap(const ColumnTuple &tuple, MutationsMap &mutations)
 {
   string column_family = tr1::get<0>(tuple);
@@ -890,19 +903,22 @@ void Cassandra::addToMap(const ColumnTuple &tuple, MutationsMap &mutations)
   Mutation mutation;
 
   if(!is_delete){
-      mutation.__isset.column_or_supercolumn          = true;
-      mutation.column_or_supercolumn.__isset.column   = true;
-      mutation.column_or_supercolumn.column.name      = name;
-      mutation.column_or_supercolumn.column.value     = value;
-      mutation.column_or_supercolumn.column.timestamp = createTimestamp();
+      mutation.__isset.column_or_supercolumn                  = true;
+      mutation.column_or_supercolumn.__isset.column           = true;
+      mutation.column_or_supercolumn.column.name              = name;
+      mutation.column_or_supercolumn.column.value             = value;
+      mutation.column_or_supercolumn.column.timestamp         = createTimestamp();
+      mutation.column_or_supercolumn.column.__isset.value     = true;
+      mutation.column_or_supercolumn.column.__isset.timestamp = true;
   }
 
   if(is_delete){
-      mutation.__isset.deletion                       = true;
-      mutation.deletion.timestamp                     = createTimestamp();
+      mutation.__isset.deletion                        = true;
+      mutation.deletion.__isset.timestamp              = true;
+      mutation.deletion.timestamp                      = createTimestamp();
 
-      mutation.deletion.__isset.predicate             = true;
-      mutation.deletion.predicate.__isset.column_names= true;
+      mutation.deletion.__isset.predicate              = true;
+      mutation.deletion.predicate.__isset.column_names = true;
       mutation.deletion.predicate.column_names.push_back(name);
   }
 
@@ -945,11 +961,14 @@ void Cassandra::addToMap(const SuperColumnTuple &tuple, MutationsMap &mutations)
       column.name = name;
       column.value = value;
       column.timestamp = createTimestamp();
+      column.__isset.value = true;
+      column.__isset.timestamp = true;
       mutation.column_or_supercolumn.super_column.columns.push_back(column);
   }
 
   if(is_delete){
       mutation.__isset.deletion                       = true;
+      mutation.deletion.__isset.timestamp             = true;
       mutation.deletion.timestamp                     = createTimestamp();
 
       mutation.deletion.__isset.super_column          = true;
@@ -1021,6 +1040,8 @@ void Cassandra::addToMap(const removeSuperColumnTuple &tuple, MutationsMap &muta
   mutation.deletion.__isset.predicate              = true;
   mutation.deletion.predicate.__isset.column_names = true;
   mutation.deletion.predicate.column_names         = names;
+  mutation.deletion.__isset.timestamp              = true;
+  mutation.deletion.timestamp                      = createTimestamp();
 
   map<string,
       vector<Mutation>
@@ -1069,6 +1090,7 @@ void Cassandra::addToMap(const batchSuperColumnTuple &tuple, MutationsMap &mutat
     Mutation mutation_d;
 
     mutation_d.__isset.deletion                        = true;
+    mutation_d.deletion.__isset.timestamp              = true;
     mutation_d.deletion.timestamp                      = createTimestamp();
     mutation_d.deletion.__isset.super_column           = true;
     mutation_d.deletion.super_column                   = super_name;
@@ -1078,4 +1100,36 @@ void Cassandra::addToMap(const batchSuperColumnTuple &tuple, MutationsMap &mutat
 
     mutation_list.push_back(mutation_d);  
   }
+}
+
+void Cassandra::addToMap(const SliceRangeSuperColumnTuple &tuple, MutationsMap &mutations)
+{
+  string column_family = tr1::get<0>(tuple);
+  string key           = tr1::get<1>(tuple);
+  string super_name    = tr1::get<2>(tuple);
+  SliceRange range     = tr1::get<3>(tuple);
+
+  map<string,
+      vector<Mutation>
+     > &mutations_per_cf = mutations[key];
+
+  if (mutations_per_cf.find(column_family) == mutations_per_cf.end()) {
+    mutations_per_cf[column_family] = std::vector<Mutation>();
+  }
+
+  vector<Mutation> &mutation_list = mutations_per_cf[column_family];
+
+  Mutation mutation;
+
+  mutation.__isset.deletion                        = true;
+  mutation.deletion.__isset.timestamp              = true;
+  mutation.deletion.timestamp                      = createTimestamp();
+  mutation.deletion.__isset.super_column           = true;
+  mutation.deletion.super_column                   = super_name;
+  mutation.deletion.__isset.predicate              = true;
+  mutation.deletion.predicate.__isset.slice_range  = true;
+  mutation.deletion.predicate.slice_range          = range;
+
+  mutation_list.push_back(mutation);
+
 }

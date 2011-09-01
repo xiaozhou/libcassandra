@@ -37,7 +37,7 @@ int main()
 
   try {
     // create keyspace
-    KeyspaceDefinition ks_def:
+    KeyspaceDefinition ks_def;
     ks_def.setName("sirikata");
     client->createKeyspace(ks_def);
     client->setKeyspace("sirikata");
@@ -98,5 +98,5 @@ int main()
     cout << "Other Exception Caught" << endl;
   }
 
-  return 0:
+  return 0;
 }

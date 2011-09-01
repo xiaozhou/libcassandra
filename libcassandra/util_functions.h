@@ -69,6 +69,14 @@ org::apache::cassandra::CfDef createCfDefObject(const ColumnFamilyDefinition& ks
 org::apache::cassandra::SlicePredicate createSlicePredicateObject(const IndexedSlicesQuery& query);
 
 /**
+ * Create a simple column with timestamp=createTimestamp()
+ * @param[in] name name of the column
+ * @param[in] value value of the column
+ * @return the created column
+ */
+org::apache::cassandra::Column createColumn(const std::string name, const std::string value);
+
+/**
  * Extract the columns from the vector of columns or super columns
  * @param[in] cols vector to process
  * @return vector of Column objects

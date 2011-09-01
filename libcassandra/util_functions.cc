@@ -71,6 +71,12 @@ KsDef createKsDefObject(const KeyspaceDefinition& ks_def)
   KsDef thrift_ks_def;
   thrift_ks_def.name.assign(ks_def.getName());
   thrift_ks_def.strategy_class.assign(ks_def.getStrategyClass());
+  if (!ks_def.getStrategyOptions().empty()) {
+    thrift_ks_def.__isset.strategy_options = true;
+    const map<string, string>& strategy_options = ks_def.getStrategyOptions();
+    thrift_ks_def.strategy_options.insert(strategy_options.begin(),
+                                          strategy_options.end());
+  }
   vector<ColumnFamilyDefinition> cf_defs= ks_def.getColumnFamilies();
   for (vector<ColumnFamilyDefinition>::iterator it= cf_defs.begin();
        it != cf_defs.end();
@@ -79,6 +85,7 @@ KsDef createKsDefObject(const KeyspaceDefinition& ks_def)
     CfDef entry= createCfDefObject(*it);
     thrift_ks_def.cf_defs.push_back(entry);
   }
+  thrift_ks_def.__isset.replication_factor = true;
   thrift_ks_def.replication_factor= ks_def.getReplicationFactor();
   return thrift_ks_def;
 }
@@ -212,6 +219,16 @@ SlicePredicate createSlicePredicateObject(const IndexedSlicesQuery& query)
   return thrift_slice_pred;
 }
 
+Column createColumn(const std::string name, const std::string value)
+{
+  Column col;
+  col.name.assign(name);
+  col.value.assign(value);
+  col.timestamp = createTimestamp();
+  col.__isset.value = true;
+  col.__isset.timestamp = true;
+  return col;
+}
 
 vector<Column> getColumnList(vector<ColumnOrSuperColumn>& cols)
 {

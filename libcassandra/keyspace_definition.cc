@@ -103,21 +103,18 @@ map<string, string> KeyspaceDefinition::getStrategyOptions() const
 
 void KeyspaceDefinition::setStrategyOptions(const map<string, string>& opts)
 {
-  (void) opts;
+  strategy_options.insert(opts.begin(), opts.end());
 }
-
 
 int32_t KeyspaceDefinition::getReplicationFactor() const
 {
-  return replication_factor;
+	return replication_factor;
 }
-
 
 void KeyspaceDefinition::setReplicationFactor(int32_t rep_factor)
 {
-  replication_factor= rep_factor;
+	replication_factor= rep_factor;
 }
-
 
 vector<ColumnFamilyDefinition> KeyspaceDefinition::getColumnFamilies() const
 {

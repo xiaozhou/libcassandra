@@ -73,6 +73,12 @@ typedef std::tr1::tuple<std::string,  //column family
   std::vector<std::string>  //column names for deletion
   > batchSuperColumnTuple;
 
+typedef std::tr1::tuple<std::string,  //column family
+  std::string,              //row key
+  std::string,              //super column name
+  org::apache::cassandra::SliceRange  //column range
+  > SliceRangeSuperColumnTuple;
+
 class Cassandra
 {
 
@@ -589,6 +595,10 @@ public:
 
   void batchMutate(const batchSuperColumnTuple &tuple);
 
+  void batchRemove(const SliceRangeSuperColumnTuple &tuple, const org::apache::cassandra::ConsistencyLevel::type level);
+
+  void batchRemove(const SliceRangeSuperColumnTuple &tuple);
+
 
 private:
 
@@ -618,6 +628,7 @@ private:
   static void addToMap(const insertSuperColumnTuple &tuple, MutationsMap &mutations);
   static void addToMap(const removeSuperColumnTuple &tuple, MutationsMap &mutations);
   static void addToMap(const batchSuperColumnTuple &tuple, MutationsMap &mutations);
+  static void addToMap(const SliceRangeSuperColumnTuple &tuple, MutationsMap &mutations);
 
   Cassandra(const Cassandra&);
   Cassandra &operator=(const Cassandra&);

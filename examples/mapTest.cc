@@ -36,20 +36,9 @@ int main()
     vector<Column> Columns;
     vector<string> Names;
 
-    Column C1;
-    C1.name  = "map:name:a";
-    C1.value = "abcd";
-    C1.timestamp = createTimestamp();
-        
-    Column C2;
-    C2.name  = "map:name:e";
-    C2.value = "efgh";
-    C2.timestamp = createTimestamp();
-        
-    Column C3;
-    C3.name  = "map:name:i";
-    C3.value = "ijkl";
-    C3.timestamp = createTimestamp();
+    Column C1 = createColumn("map:name:a", "[abcd]");
+    Column C2 = createColumn("map:name:e", "[efgh]");
+    Column C3 = createColumn("map:name:i", "[ijkl]");
  
     Columns.push_back(C1);
     Columns.push_back(C2);
@@ -96,6 +85,9 @@ int main()
     cout<<"Count-------------"<<endl;
     int32_t count = client->getCount(key, col_parent, predicate);
     cout<<"count: "<<count<<endl;
+
+    SliceRangeSuperColumnTuple sTuple = SliceRangeSuperColumnTuple("persistence", key, "@", range);
+    client->batchRemove(sTuple);
         
   }
   catch (org::apache::cassandra::NotFoundException &ire) {
