@@ -195,15 +195,15 @@ void Cassandra::insertColumn(const string& key,
 
 
 void Cassandra::remove(const string &key,
-                      const ColumnPath &col_path,
-                      ConsistencyLevel::type level)
+                       const ColumnPath &col_path,
+                       ConsistencyLevel::type level)
 {
   thrift_client->remove(key, col_path, createTimestamp(), level);
 }
 
 
 void Cassandra::remove(const string &key,
-                      const ColumnPath &col_path)
+                       const ColumnPath &col_path)
 {
   thrift_client->remove(key, col_path, createTimestamp(), ConsistencyLevel::QUORUM);
 }
@@ -345,13 +345,11 @@ SuperColumn Cassandra::getSuperColumn(const string& key,
   return getSuperColumn(key, column_family, super_column_name, ConsistencyLevel::QUORUM);
 }
 
-vector<Column> Cassandra::getColumns(
-    const string &key,
-    const string &column_family,
-    const string &super_column_name,
-    const vector<string> column_names,
-    org::apache::cassandra::ConsistencyLevel::type level
-    )
+vector<Column> Cassandra::getColumns(const string &key,
+                                     const string &column_family,
+                                     const string &super_column_name,
+                                     const vector<string> column_names,
+                                     ConsistencyLevel::type level)
 {
 
   ColumnParent col_parent;
@@ -382,41 +380,33 @@ vector<Column> Cassandra::getColumns(
   return result;
 }
 
-vector<Column> Cassandra::getColumns(
-    const string &key,
-    const string &column_family,
-    const string &super_column_name,
-    const vector<string> column_names
-    )
+vector<Column> Cassandra::getColumns(const string &key,
+                                     const string &column_family,
+                                     const string &super_column_name,
+                                     const vector<string> column_names)
 {
 	return getColumns(key, column_family, super_column_name, column_names, ConsistencyLevel::QUORUM);
 }
 
-vector<Column> Cassandra::getColumns(
-    const string &key,
-    const string &column_family,
-    const vector<string> column_names,
-    org::apache::cassandra::ConsistencyLevel::type level
-    )
+vector<Column> Cassandra::getColumns(const string &key,
+                                     const string &column_family,
+                                     const vector<string> column_names,
+                                     ConsistencyLevel::type level)
 {
   return getColumns(key, column_family, "", column_names, level);
 }
 
-vector<Column> Cassandra::getColumns(
-    const string &key,
-    const string &column_family,
-    const vector<string> column_names
-    )
+vector<Column> Cassandra::getColumns(const string &key,
+                                     const string &column_family,
+                                     const vector<string> column_names)
 {
   return getColumns(key, column_family, "", column_names, ConsistencyLevel::QUORUM);
 }
 
-tr1::unordered_map<string, string> Cassandra::getColumnsValues(
-    const string &key,
-    const string &column_family,
-    const string &super_column_name,
-    const vector<string> column_names
-    )
+tr1::unordered_map<string, string> Cassandra::getColumnsValues(const string &key,
+                                                               const string &column_family,
+                                                               const string &super_column_name,
+                                                               const vector<string> column_names)
 {
 	tr1::unordered_map<string, string> result;
 	vector<Column> columns = getColumns(key, column_family, super_column_name, column_names, ConsistencyLevel::QUORUM);
@@ -434,23 +424,19 @@ tr1::unordered_map<string, string> Cassandra::getColumnsValues(
 	return result;
 }
 
-tr1::unordered_map<string, string> Cassandra::getColumnsValues(
-    const string &key,
-    const string &column_family,
-    const vector<string> column_names
-    )
+tr1::unordered_map<string, string> Cassandra::getColumnsValues(const string &key,
+                                                               const string &column_family,
+                                                               const vector<string> column_names)
 {
 	return getColumnsValues(key, column_family, "", column_names);
 }
 
 vector<Column> Cassandra::getColumns(const string &key,
-                           const std::string &column_family,
-                           const std::string &super_column_name,
-                           const org::apache::cassandra::SliceRange &range,
-			   org::apache::cassandra::ConsistencyLevel::type level
-			   )
+                                     const std::string &column_family,
+                                     const std::string &super_column_name,
+                                     const SliceRange &range,
+                                     ConsistencyLevel::type level)
 {
-
   ColumnParent col_parent;
   SlicePredicate pred;
   vector<ColumnOrSuperColumn> ret_cosc;
@@ -480,18 +466,17 @@ vector<Column> Cassandra::getColumns(const string &key,
 }
 
 vector<Column> Cassandra::getColumns(const string &key,
-                           const std::string &column_family,
-                           const std::string &super_column_name,
-                           const org::apache::cassandra::SliceRange &range
-			   )
+                                     const std::string &column_family,
+                                     const std::string &super_column_name,
+                                     const SliceRange &range)
 {
 	return getColumns(key, column_family, super_column_name, range, ConsistencyLevel::QUORUM);
 }
 
 vector<Column> Cassandra::getColumns(const string &key,
-                           const std::string &column_family,
-                           const org::apache::cassandra::SliceRange &range,
-			   org::apache::cassandra::ConsistencyLevel::type level
+                                     const std::string &column_family,
+                                     const SliceRange &range,
+			                         ConsistencyLevel::type level
 			   )
 {
   return getColumns(key, column_family, "", range, level);
@@ -499,17 +484,38 @@ vector<Column> Cassandra::getColumns(const string &key,
 
 vector<Column> Cassandra::getColumns(const string &key,
                            const std::string &column_family,
-                           const org::apache::cassandra::SliceRange &range
-			   )
+                           const SliceRange &range)
 {
   return getColumns(key, column_family, "", range, ConsistencyLevel::QUORUM);
 }
 
-vector<SuperColumn> Cassandra::getSuperColumns(
-  const string& key,
-  const string &column_family,
-  const vector<string> super_column_names,
-  ConsistencyLevel::type level)
+
+tr1::unordered_map<string, string> Cassandra::getColumnsValues(const string &key,
+                                                               const string &column_family,
+                                                               const string &super_column_name,
+                                                               const SliceRange &range)
+{
+	tr1::unordered_map<string, string> result;
+	vector<Column> columns = getColumns(key, column_family, super_column_name, range, ConsistencyLevel::QUORUM);
+	for (vector<Column>::iterator it= columns.begin(); it != columns.end(); ++it)
+	{
+		result[(*it).name]=(*it).value;
+	}
+	return result;
+}
+
+tr1::unordered_map<string, string> Cassandra::getColumnsValues(const string &key,
+                                                               const string &column_family,
+                                                               const SliceRange &range)
+{
+	return getColumnsValues(key, column_family, "", range);
+}
+
+
+vector<SuperColumn> Cassandra::getSuperColumns(const string& key,
+                                               const string &column_family,
+                                               const vector<string> super_column_names,
+                                               ConsistencyLevel::type level)
 {
   ColumnParent col_parent;
   SlicePredicate pred;
@@ -534,19 +540,17 @@ vector<SuperColumn> Cassandra::getSuperColumns(
   return result;
 }
 
-vector<SuperColumn> Cassandra::getSuperColumns(
-  const string& key,
-  const string &column_family,
-  const vector<string> super_column_names)
+vector<SuperColumn> Cassandra::getSuperColumns(const string& key,
+                                               const string &column_family,
+                                               const vector<string> super_column_names)
 {
   return getSuperColumns(key, column_family, super_column_names, ConsistencyLevel::QUORUM);
 }
 
-vector<SuperColumn> Cassandra::getSuperColumns(
-    const string& key,
-    const string& column_family,
-    const org::apache::cassandra::SliceRange &range,
-    ConsistencyLevel::type level)
+vector<SuperColumn> Cassandra::getSuperColumns(const string& key,
+                                               const string& column_family,
+                                               const SliceRange &range,
+                                               ConsistencyLevel::type level)
 {
   ColumnParent col_parent;
   SlicePredicate pred;
@@ -572,10 +576,9 @@ vector<SuperColumn> Cassandra::getSuperColumns(
 }
 
 
-vector<SuperColumn> Cassandra::getSuperColumns(
-    const string& key,
-    const string& column_family,
-    const org::apache::cassandra::SliceRange &range)
+vector<SuperColumn> Cassandra::getSuperColumns(const string& key,
+                                               const string& column_family,
+                                               const SliceRange &range)
 {
   return getSuperColumns(key, column_family, range, ConsistencyLevel::QUORUM);
 }
@@ -851,7 +854,7 @@ void Cassandra::batchMutate(const vector<SuperColumnTuple> &tuples){
     batchMutate(tuples, ConsistencyLevel::QUORUM);
 }
 
-void Cassandra::batchMutate(const vector<batchSuperColumnTuple> &tuples, const org::apache::cassandra::ConsistencyLevel::type level) {
+void Cassandra::batchMutate(const vector<batchSuperColumnTuple> &tuples, const ConsistencyLevel::type level) {
     MutationsMap mutations;
     for (vector<batchSuperColumnTuple>::const_iterator tuple = tuples.begin();
     		tuple != tuples.end(); tuple++) {
@@ -865,7 +868,7 @@ void Cassandra::batchMutate(const vector<batchSuperColumnTuple> &tuples) {
     batchMutate(tuples, ConsistencyLevel::QUORUM); 
 }
 
-void Cassandra::batchMutate(const batchSuperColumnTuple &tuple, const org::apache::cassandra::ConsistencyLevel::type level) {
+void Cassandra::batchMutate(const batchSuperColumnTuple &tuple, const ConsistencyLevel::type level) {
     MutationsMap mutations;
     addToMap(tuple, mutations);
 

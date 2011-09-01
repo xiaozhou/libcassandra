@@ -421,6 +421,15 @@ public:
                                                          const org::apache::cassandra::SliceRange &range);
 
 
+  std::tr1::unordered_map<std::string, std::string> getColumnsValues(const std::string &key,
+                                                                     const std::string &column_family,
+                                                                     const std::string &super_column_name,
+                                                                     const org::apache::cassandra::SliceRange &range);
+
+  std::tr1::unordered_map<std::string, std::string> getColumnsValues(const std::string &key,
+                                              						 const std::string &column_family,
+                                              						const org::apache::cassandra::SliceRange &range);
+
   /**
    * Retrieve multiple super columns by names
    *
@@ -430,13 +439,12 @@ public:
    * @param[in] level Consistency level (optional)
    * @return A list of found super columns
    */
-  std::vector<org::apache::cassandra::SuperColumn> getSuperColumns(
-                                                                   const std::string &key,
+  std::vector<org::apache::cassandra::SuperColumn> getSuperColumns(const std::string &key,
                                                                    const std::string &column_family,
                                                                    const std::vector<std::string> super_column_names,
                                                                    org::apache::cassandra::ConsistencyLevel::type level);
-  std::vector<org::apache::cassandra::SuperColumn> getSuperColumns(
-                                                                   const std::string &key,
+
+  std::vector<org::apache::cassandra::SuperColumn> getSuperColumns(const std::string &key,
                                                                    const std::string &column_family,
                                                                    const std::vector<std::string> super_column_names);
   /**
@@ -448,13 +456,12 @@ public:
    * @param[in] level Consistency level (optional)
    * @return A list of found super columns
    */
-  std::vector<org::apache::cassandra::SuperColumn> getSuperColumns(
-                                                                   const std::string &key,
+  std::vector<org::apache::cassandra::SuperColumn> getSuperColumns(const std::string &key,
                                                                    const std::string &column_family,
                                                                    const org::apache::cassandra::SliceRange &range,
                                                                    org::apache::cassandra::ConsistencyLevel::type level);
-  std::vector<org::apache::cassandra::SuperColumn> getSuperColumns(
-                                                                   const std::string &key,
+
+  std::vector<org::apache::cassandra::SuperColumn> getSuperColumns(const std::string &key,
                                                                    const std::string &column_family,
                                                                    const org::apache::cassandra::SliceRange &range);
 

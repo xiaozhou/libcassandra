@@ -70,12 +70,19 @@ int main()
     range.start="map:name";
     range.finish="map:name@";
     range.count=100;
-    cols = client->getColumns(key, "persistence", "@", range);
 
+    ReadSet rs2 = client->getColumnsValues(key, "persistence", "@", range);
+
+    for (ReadSet::iterator it=rs2.begin(); it!=rs2.end(); it++) {
+    	string key = it->first; string value = it->second;
+    	cout<<key<<" == "<<value<<endl;
+    }
+    /*
+    cols = client->getColumns(key, "persistence", "@", range);
     cout<<"Read ALL---------"<<endl;
     for (vector<Column>::iterator it = cols.begin(); it!=cols.end();it++) {
       cout<<(*it).name<<" -- "<<(*it).value<<endl;
-    }
+    }*/
 
     ColumnParent col_parent;
     col_parent.__isset.super_column=true;
