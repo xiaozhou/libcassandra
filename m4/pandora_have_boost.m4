@@ -10,24 +10,11 @@ AC_DEFUN([_PANDORA_SEARCH_BOOST],[
   dnl  Check for boost
   dnl --------------------------------------------------------------------
 
-  AC_ARG_ENABLE([boost],
-    [AS_HELP_STRING([--disable-boost],
-      [Build with boost support @<:@default=on@:>@])],
-    [ac_enable_boost="$enableval"],
-    [ac_enable_boost="yes"])
-
-  AS_IF([test "x$ac_enable_boost" = "xyes"],[
-    dnl link against libc because we're just looking for headers here
-    AC_LANG_PUSH(C++)
-    AC_LIB_HAVE_LINKFLAGS(c,,
-      [#include <boost/pool/pool.hpp>],
-      [boost::pool<> test_pool(1);],
-      [system])
-    AC_LANG_POP()
-  ],[
-    ac_cv_boost="no"
-  ])
-  
+  AC_ARG_WITH([boost-prefix],
+    [AS_HELP_STRING([--with-boost-prefix],[boost prefix path])],
+    [boost_prefix=$withval],
+    [boost_prefix=""]
+    )
 
   AS_IF([test "x$1" != "x"],[
     AC_CACHE_CHECK([if boost is recent enough],
@@ -36,6 +23,12 @@ AC_DEFUN([_PANDORA_SEARCH_BOOST],[
       AS_IF([test "x${pandora_need_boost_version}" = "x000000"],[
         pandora_cv_recent_boost=yes
       ],[
+
+        if test "x${boost_prefix}" != "x"; then
+          AC_MSG_CHECKING([adding boost prefix])
+          ac_boost_save_CPPFLAGS="$CPPFLAGS"
+          AC_LIB_APPENDTOVAR([CPPFLAGS], [-I$boost_prefix/include])
+        fi
         AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <boost/version.hpp>
 
@@ -47,6 +40,7 @@ AC_DEFUN([_PANDORA_SEARCH_BOOST],[
           pandora_cv_recent_boost=yes
         ],[
           pandora_cv_recent_boost=no
+          CPPFLAGS="$ac_boost_save_CPPFLAGS"
         ])
       ])
     ])
@@ -54,10 +48,10 @@ AC_DEFUN([_PANDORA_SEARCH_BOOST],[
       ac_cv_boost=no
     ])
   ])
-      
+
 
   AM_CONDITIONAL(HAVE_BOOST, [test "x${ac_cv_boost}" = "xyes"])
-  
+
 ])
 
 AC_DEFUN([PANDORA_HAVE_BOOST],[
@@ -69,4 +63,3 @@ AC_DEFUN([PANDORA_REQUIRE_BOOST],[
   AS_IF([test x$ac_cv_boost = xno],
       AC_MSG_ERROR([boost is required for ${PACKAGE}]))
 ])
-
