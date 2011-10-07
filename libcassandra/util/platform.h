@@ -12,6 +12,11 @@
 
 #ifdef __GNUC__
 
+// Disables boost::fusion version of tuple. This is for Sirikata compatibility,
+// you'll need a similar setup if you do your own inclusion of boost headers.
+#if (__GNUC__ == 4 && __GNUC_MINOR__ >= 3) || __GNUC__ > 4
+#define BOOST_HAS_GCC_TR1
+
 // #include_next is broken: it does not search default include paths!
 #define BOOST_TR1_DISABLE_INCLUDE_NEXT
 // config_all.hpp reads this variable, then sets BOOST_HAS_INCLUDE_NEXT anyway
@@ -21,6 +26,7 @@
 #undef BOOST_HAS_INCLUDE_NEXT
 #endif
 
+#endif
 #endif
 
 #include <boost/tr1/memory.hpp>
