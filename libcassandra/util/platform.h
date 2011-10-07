@@ -22,7 +22,6 @@
 #endif
 
 #endif
-#endif
 
 #include <boost/tr1/memory.hpp>
 #include <boost/tr1/tuple.hpp>
