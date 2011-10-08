@@ -37,3 +37,11 @@ subprocess.call(['/bin/bash', '-x', '-c', 'cp gen-cpp/* libgenthrift/'])
 # them.
 subprocess.call(['cp', 'libgenthrift/cassandra_constants.h', 'libgenthrift/cassandra_constants.h.orig'])
 subprocess.call(['sed', 's/std::string VERSION/#undef VERSION\\nstd::string VERSION/', 'libgenthrift/cassandra_constants.h.orig'], stdout=open('libgenthrift/cassandra_constants.h', 'w'))
+
+# We also want to export classes from the shared library version so
+# that their types are correct, allowing us to properly catch
+# exceptions from the code using the (dynamic) library. The only ones
+# we care about are in cassandra_types.h
+subprocess.call(['echo', '#include "platform.h"'], stdout=open('libgenthrift/include_platform_h', 'w'))
+subprocess.call(['sed', 's/^class /class LIBCASSANDRA_EXPORT /', 'libgenthrift/cassandra_types.h'], stdout=open('libgenthrift/cassandra_types.h.export', 'w'))
+subprocess.call(['cat', 'libgenthrift/include_platform_h', 'libgenthrift/cassandra_types.h.export'], stdout=open('libgenthrift/cassandra_types.h', 'w'))

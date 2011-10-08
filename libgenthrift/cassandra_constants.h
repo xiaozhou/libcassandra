@@ -8,15 +8,14 @@
 
 #include "cassandra_types.h"
 
-#undef VERSION
-
 namespace org { namespace apache { namespace cassandra {
 
 class cassandraConstants {
  public:
   cassandraConstants();
 
-  std::string VERSION;
+  #undef VERSION
+std::string VERSION;
 };
 
 extern const cassandraConstants g_cassandra_constants;
