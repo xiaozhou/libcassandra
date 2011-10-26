@@ -10,11 +10,6 @@
 #ifndef __LIBCASSANDRA_UTIL_POOL_H
 #define __LIBCASSANDRA_UTIL_POOL_H
 
-#include <string>
-#include <vector>
-#include <set>
-#include <tr1/memory>
-
 #include "libcassandra/cassandra.h"
 
 namespace libcassandra

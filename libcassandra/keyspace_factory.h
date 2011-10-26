@@ -10,9 +10,7 @@
 #ifndef __LIBCASSANDRA_KEYSPACE_FACTORY_H
 #define __LIBCASSANDRA_KEYSPACE_FACTORY_H
 
-#include <string>
-#include <map>
-#include <tr1/memory>
+#include "libcassandra/util/platform.h"
 
 namespace libcassandra
 {

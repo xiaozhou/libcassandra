@@ -7,9 +7,6 @@
  * the COPYING file in the parent directory for full text.
  */
 
-#include <string>
-#include <map>
-#include <tr1/memory>
 
 #include "libgenthrift/Cassandra.h"
 
