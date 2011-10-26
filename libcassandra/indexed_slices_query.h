@@ -10,10 +10,7 @@
 #ifndef __LIBCASSANDRA_INDEXED_SLICES_QUERY_H
 #define __LIBCASSANDRA_INDEXED_SLICES_QUERY_H
 
-#include <string>
-#include <vector>
-#include <map>
-#include <tr1/memory>
+#include "libcassandra/util/platform.h"
 
 #include "libgenthrift/cassandra_types.h"
 

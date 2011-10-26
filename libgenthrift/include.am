@@ -17,7 +17,8 @@ EXTRA_DIST+= \
 nobase_include_HEADERS+= \
 			 libgenthrift/cassandra_constants.h \
 			 libgenthrift/Cassandra.h \
-			 libgenthrift/cassandra_types.h 
+			 libgenthrift/cassandra_types.h \
+			 libgenthrift/platform.h
 
 libgenthrift_libgenthrift_la_SOURCES= \
 				  libgenthrift/cassandra_constants.cpp \
@@ -29,4 +30,3 @@ libgenthrift_libgenthrift_la_CXXFLAGS= \
 
 libgenthrift_libgenthrift_la_LIBADD= \
 				  $(LIBTHRIFT) 
-

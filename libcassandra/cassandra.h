@@ -10,13 +10,7 @@
 #ifndef __LIBCASSANDRA_CASSANDRA_H
 #define __LIBCASSANDRA_CASSANDRA_H
 
-#include <string>
-#include <vector>
-#include <set>
-#include <map>
-#include <tr1/memory>
-#include <tr1/tuple>
-#include <tr1/unordered_map>
+#include "libcassandra/util/platform.h"
 
 #include "../libgenthrift/cassandra_types.h"
 

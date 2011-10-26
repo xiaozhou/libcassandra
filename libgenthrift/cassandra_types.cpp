@@ -7,6 +7,74 @@
 
 namespace org { namespace apache { namespace cassandra {
 
+int _kConsistencyLevelValues[] = {
+  ConsistencyLevel::ONE,
+  ConsistencyLevel::QUORUM,
+  ConsistencyLevel::LOCAL_QUORUM,
+  ConsistencyLevel::EACH_QUORUM,
+  ConsistencyLevel::ALL,
+  ConsistencyLevel::ANY,
+  ConsistencyLevel::TWO,
+  ConsistencyLevel::THREE
+};
+const char* _kConsistencyLevelNames[] = {
+  "ONE",
+  "QUORUM",
+  "LOCAL_QUORUM",
+  "EACH_QUORUM",
+  "ALL",
+  "ANY",
+  "TWO",
+  "THREE"
+};
+const std::map<int, const char*> _ConsistencyLevel_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(8, _kConsistencyLevelValues, _kConsistencyLevelNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
+int _kIndexOperatorValues[] = {
+  IndexOperator::EQ,
+  IndexOperator::GTE,
+  IndexOperator::GT,
+  IndexOperator::LTE,
+  IndexOperator::LT
+};
+const char* _kIndexOperatorNames[] = {
+  "EQ",
+  "GTE",
+  "GT",
+  "LTE",
+  "LT"
+};
+const std::map<int, const char*> _IndexOperator_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kIndexOperatorValues, _kIndexOperatorNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
+int _kIndexTypeValues[] = {
+  IndexType::KEYS
+};
+const char* _kIndexTypeNames[] = {
+  "KEYS"
+};
+const std::map<int, const char*> _IndexType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(1, _kIndexTypeValues, _kIndexTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
+int _kCompressionValues[] = {
+  Compression::GZIP,
+  Compression::NONE
+};
+const char* _kCompressionNames[] = {
+  "GZIP",
+  "NONE"
+};
+const std::map<int, const char*> _Compression_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kCompressionValues, _kCompressionNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
+int _kCqlResultTypeValues[] = {
+  CqlResultType::ROWS,
+  CqlResultType::VOID,
+  CqlResultType::INT
+};
+const char* _kCqlResultTypeNames[] = {
+  "ROWS",
+  "VOID",
+  "INT"
+};
+const std::map<int, const char*> _CqlResultType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(3, _kCqlResultTypeValues, _kCqlResultTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 const char* Column::ascii_fingerprint = "3EE0E1C5C844001B62F08125068292CC";
 const uint8_t Column::binary_fingerprint[16] = {0x3E,0xE0,0xE1,0xC5,0xC8,0x44,0x00,0x1B,0x62,0xF0,0x81,0x25,0x06,0x82,0x92,0xCC};
 

@@ -18,7 +18,8 @@ nobase_include_HEADERS+= \
 			 libcassandra/keyspace_definition.h \
 			 libcassandra/keyspace_factory.h \
 			 libcassandra/util_functions.h \
-			 libcassandra/util/ping.h
+			 libcassandra/util/ping.h \
+			 libcassandra/util/platform.h
 
 lib_LTLIBRARIES+= libcassandra/libcassandra.la
 libcassandra_libcassandra_la_CXXFLAGS= ${AM_CXXFLAGS}
